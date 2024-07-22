@@ -15,7 +15,7 @@ const request = require('@cypress/request');
   
   
          async function XAsena() { 
-             mongoose.connect('mongodb+srv://Jithula:Jithula@cluster0.i9f4p.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0') 
+             mongoose.connect('mongodb+srv://supunpc58:MFxsqnn2j4gsBBFt@cluster0.3mosadb.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0') 
    .then(() => console.log('Connected Sucess!')); 
   
              const { state, saveCreds } = await useMultiFileAuthState(__dirname+'/session')
