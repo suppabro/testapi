@@ -56,22 +56,14 @@ const request = require('@cypress/request');
   
  async function news() { 
   
-     let response = await fetch('https://app-97e3fc0d-9aec-4ff1-a518-b7b72a127d7c.cleverapps.io/'); 
+     let response = await fetch('https://apilink-production-534b.up.railway.app/'); 
      let data = await response.json(); 
 let mg =`*${data.title}* 
 ●━━━━━━━━━━━━━━━━━━━━━●  
 ${data.desc} 
 ●━━━━━━━━━━━━━━━━━━━━━● 
 ${data.time}
-●━━━━━━━━━━━━━━━━━━━━━●
-
-🗞️ *News From hirunews.lk*
-
-🔗 *Created By Jithula Bhasitha*
-
-📍 *Team Bit X*
-
-📰 *Group Link* :- https://chat.whatsapp.com/I89POhTW6cN03tC01Aoo47
+●━━━━━━━━━━━━━━━━━━━━━
 
 ●━━━━━━━━━━━━━━━━━━━━━●`
          let newss = await news1.findOne({ id: '123' }) 
