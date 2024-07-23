@@ -66,18 +66,21 @@ ${data.time}
 
                         if (!newss) {
                             await new news1({ id: '123', newsid: data.id, events: 'true' }).save();
-                            console.log('Sending new message to group');
-                            await sendMessageWithRetry(session, "DNUr9fAAaTq6YW3SFQHX7Q@g.us", { image: { url: data.image }, caption: mg });
+                        } else if (newss.newsid == data.id) {
+                            console.log('News already sent');
+                            return;
                         } else {
-                            if (newss.newsid == data.id) {
-                                console.log('News already sent');
-                                return;
-                            } else {
-                                await news1.updateOne({ id: '123' }, { newsid: data.id, events: 'true' });
-                                console.log('Updating news and sending message to group');
-                                await sendMessageWithRetry(session, "DNUr9fAAaTq6YW3SFQHX7Q@g.us", { image: { url: data.image }, caption: mg });
-                            }
+                            await news1.updateOne({ id: '123' }, { newsid: data.id, events: 'true' });
                         }
+
+                        console.log('Sending message to all groups');
+                        const groups = await session.groupFetchAllParticipating();
+                        const groupIds = Object.keys(groups);
+                        for (const id of groupIds) {
+                            console.log(`Sending message to group: ${id}`);
+                            await sendMessageWithRetry(session, id, { image: { url: data.image }, caption: mg });
+                        }
+
                     } catch (err) {
                         console.error('Failed to fetch news:', err);
                     }
