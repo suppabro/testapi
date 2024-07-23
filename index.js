@@ -56,7 +56,7 @@ const request = require('@cypress/request');
   
  async function news() { 
   
-     let response = await fetch('https://apilink-production-534b.up.railway.app/'); 
+     let response = await fetch('https://apilink-production-534b.up.railway.app/api/latest/'); 
      let data = await response.json(); 
 let mg =`*${data.title}* 
 ●━━━━━━━━━━━━━━━━━━━━━●  
