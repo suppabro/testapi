@@ -67,7 +67,7 @@ ${data.time}
                         if (!newss) {
                             await new news1({ id: '123', newsid: data.id, events: 'true' }).save();
                             console.log('Sending new message to group');
-                            await session.sendMessage("DNUr9fAAaTq6YW3SFQHX7Q@g.us", { image: { url: data.image }, caption: mg }, { ephemeralExpiration: WA_DEFAULT_EPHEMERAL });
+                            await sendMessageWithRetry(session, "DNUr9fAAaTq6YW3SFQHX7Q@g.us", { image: { url: data.image }, caption: mg });
                         } else {
                             if (newss.newsid == data.id) {
                                 console.log('News already sent');
@@ -75,7 +75,7 @@ ${data.time}
                             } else {
                                 await news1.updateOne({ id: '123' }, { newsid: data.id, events: 'true' });
                                 console.log('Updating news and sending message to group');
-                                await session.sendMessage("DNUr9fAAaTq6YW3SFQHX7Q@g.us", { image: { url: data.image }, caption: mg }, { ephemeralExpiration: WA_DEFAULT_EPHEMERAL });
+                                await sendMessageWithRetry(session, "DNUr9fAAaTq6YW3SFQHX7Q@g.us", { image: { url: data.image }, caption: mg });
                             }
                         }
                     } catch (err) {
@@ -97,6 +97,23 @@ ${data.time}
 
     } catch (err) {
         console.error('An error occurred:', err);
+    }
+}
+
+async function sendMessageWithRetry(session, jid, message, retries = 3) {
+    for (let i = 0; i < retries; i++) {
+        try {
+            await session.sendMessage(jid, message, { ephemeralExpiration: WA_DEFAULT_EPHEMERAL });
+            console.log('Message sent successfully');
+            return;
+        } catch (err) {
+            console.error(`Failed to send message on attempt ${i + 1}:`, err);
+            if (i === retries - 1) {
+                console.error('Max retries reached, giving up');
+            } else {
+                console.log('Retrying...');
+            }
+        }
     }
 }
 
