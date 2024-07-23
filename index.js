@@ -51,7 +51,7 @@ async function XAsena() {
             if (connection === "open") {
                 async function news() {
                     try {
-                        let response = await fetch('https://apilink-production-534b.up.railway.app/api/latest/');
+                        let response = await fetch('https://apilink-production-534b.up.railway.app/');
                         let data = await response.json();
                         let mg = `*${data.title}*
 ●━━━━━━━━━━━━━━━━━━━━━●
