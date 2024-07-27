@@ -1,0 +1,28 @@
+{
+    "name": "X-News-V1",
+    "version": "1.0.0",
+    "description": "Multi device whatsapp news bot by Jithula",
+    "main": "index.js",
+    "type": "commonjs",
+    "scripts": {
+        "start": "node index.js --attach --name moxie",
+        "stop": "node stop moxier"
+    },
+    "author": "Jithula",
+    "license": "GPL-3.0",
+    "dependencies": {
+        "@whiskeysockets/baileys": "latest",
+        "@adiwajshing/keyed-db": "^0.2.4",
+        "chalk": "^5.0.1",
+        "crypto-js": "^4.1.1",
+        "@cypress/request": "^3.0.1",
+        "axios": "latest",
+        "node-fetch": "^3.2.6",
+        "mongoose": "latest",
+        "path": "^0.12.7",
+        "pino": "^8.1.0",
+        "@google-cloud/text-to-speech": "latest",
+        "fs": "latest",
+        "util": "latest"
+    }
+}
