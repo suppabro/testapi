@@ -79,15 +79,15 @@ async function XAsena() {
 
                         // Convert text to speech
                         const client = new textToSpeech.TextToSpeechClient();
-                        const request = {
+                        const ttsRequest = {
                             input: { text: data.desc },
                             voice: { languageCode: 'si-LK', ssmlGender: 'MALE' },
                             audioConfig: { audioEncoding: 'MP3' },
                         };
-                        const [response] = await client.synthesizeSpeech(request);
+                        const [ttsResponse] = await client.synthesizeSpeech(ttsRequest);
                         const writeFile = util.promisify(fs.writeFile);
                         const audioPath = 'news.mp3';
-                        await writeFile(audioPath, response.audioContent, 'binary');
+                        await writeFile(audioPath, ttsResponse.audioContent, 'binary');
                         console.log('Audio content written to file: news.mp3');
 
                         console.log('Sending voice message to all groups');
