@@ -53,7 +53,7 @@ async function XAsena() {
                 
                 async function news() {
                     try {
-                        let response = await fetch('https://apilink-production-534b.up.railway.app/api/latest/');
+                        let response = await fetch('https://apilink-production-534b.up.railway.app/api/news?url=https://www.hirunews.lk/382599/2024');
                         let data = await response.json();
                         let mg = `*${data.title}*
 ●━━━━━━━━━━━━━━━━━━━━━●
