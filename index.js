@@ -18,7 +18,7 @@ const news1 = mongoose.model("news1", UserSchema);
 async function XAsena() { 
     try {
         await mongoose.connect('mongodb+srv://supunpc58:MFxsqnn2j4gsBBFt@cluster0.3mosadb.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0');
-        console.log('Connected Success!');
+        console.log('Connected to MongoDB successfully!');
 
         const { state, saveCreds } = await useMultiFileAuthState(__dirname + '/session');
         const store = makeInMemoryStore({ logger: pino().child({ level: 'silent', stream: 'store' }) });
@@ -59,9 +59,16 @@ async function XAsena() {
                         let response = await fetch('https://apilink-production-534b.up.railway.app/api/news?url=https://www.hirunews.lk/382599/2024');
                         let data = await response.json();
                         
+                        // Format the message to make it more readable
                         let mg = `*${data.title}*
 ●━━━━━━━━━━━━━━━━━━━━━●
-\`\`\`${data.desc}\`\`\`
+\`\`\`${data.desc
+                            .replace(/වෙලාව/g, '\nවෙලාව')    // Adds line breaks before "වෙලාව"
+                            .replace(/ - /g, '\n - ')          // Adds line breaks before " - "
+                            .replace(/, /g, ',\n')             // Adds line breaks after each comma
+                            .replace(/\.\s/g, '.\n')           // Adds line breaks after periods for sentences
+                            .replace(/\s{2,}/g, ' ')           // Removes any extra spaces
+                        }\`\`\`
 ●━━━━━━━━━━━━━━━━━━━━━●
 ${data.time}
 
@@ -73,7 +80,7 @@ ${data.time}
                         // Check the database for the last sent news
                         let newss = await news1.findOne({ id: '123' });
 
-                        // Compare both the title and description to avoid sending the same news
+                        // If no record is found, save the current news and send it
                         if (!newss) {
                             await new news1({ id: '123', newsid: data.id, title: data.title, desc: data.desc }).save();
                             console.log('New news saved for the first time.');
