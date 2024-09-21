@@ -53,8 +53,10 @@ async function XAsena() {
                 
                 async function news() {
                     try {
-                        let response = await fetch('https://apilink-production-534b.up.railway.app/api/latest/');
+                        // Fetch the latest news from the static API link
+                        let response = await fetch('https://apilink-production-534b.up.railway.app/api/news?url=https://www.hirunews.lk/382599/2024');
                         let data = await response.json();
+                        
                         let mg = `*${data.title}*
 ●━━━━━━━━━━━━━━━━━━━━━●
 \`\`\`${data.desc}\`\`\`
@@ -66,17 +68,26 @@ ${data.time}
 
 ●━━━━━━━━━━━━━━━━━━━━━●`;
 
+                        // Check the database for the last sent news
                         let newss = await news1.findOne({ id: '123' });
 
+                        // If no record is found, save the current news and send it
                         if (!newss) {
-                            await new news1({ id: '123', newsid: data.id, events: 'true' }).save();
-                        } else if (newss.newsid == data.id) {
-                            console.log('News already sent');
+                            await new news1({ id: '123', newsid: data.id }).save();
+                            console.log('New news saved for the first time.');
+                        } 
+                        // If the news ID is the same as the previously sent one, skip sending
+                        else if (newss.newsid == data.id) {
+                            console.log('News already sent, no new updates.');
                             return;
-                        } else {
-                            await news1.updateOne({ id: '123' }, { newsid: data.id, events: 'true' });
+                        } 
+                        // If the news ID is different, update the database and send the news
+                        else {
+                            await news1.updateOne({ id: '123' }, { newsid: data.id });
+                            console.log('News updated and saved.');
                         }
 
+                        // Send the news to all groups
                         console.log('Sending message to all groups');
                         const groups = await session.groupFetchAllParticipating();
                         const groupIds = Object.keys(groups);
@@ -90,6 +101,7 @@ ${data.time}
                     }
                 }
 
+                // Fetch news every 10 seconds
                 setInterval(news, 10000);
             }
             if (connection === "close" && lastDisconnect && lastDisconnect.error && lastDisconnect.error.output.statusCode !== 401) {
