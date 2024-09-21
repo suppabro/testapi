@@ -9,6 +9,8 @@ const request = require('@cypress/request');
 const UserSchema = new mongoose.Schema({ 
     id: { type: String, required: true, unique: true }, 
     newsid: { type: String }, 
+    title: { type: String },
+    desc: { type: String },
 });
 
 const news1 = mongoose.model("news1", UserSchema);
@@ -71,19 +73,19 @@ ${data.time}
                         // Check the database for the last sent news
                         let newss = await news1.findOne({ id: '123' });
 
-                        // If no record is found, save the current news and send it
+                        // Compare both the title and description to avoid sending the same news
                         if (!newss) {
-                            await new news1({ id: '123', newsid: data.id }).save();
+                            await new news1({ id: '123', newsid: data.id, title: data.title, desc: data.desc }).save();
                             console.log('New news saved for the first time.');
                         } 
-                        // If the news ID is the same as the previously sent one, skip sending
-                        else if (newss.newsid == data.id) {
-                            console.log('News already sent, no new updates.');
+                        // If both the title and description are the same as the previous one, skip sending
+                        else if (newss.newsid == data.id && newss.title == data.title && newss.desc == data.desc) {
+                            console.log('No significant news update, skipping message.');
                             return;
                         } 
-                        // If the news ID is different, update the database and send the news
+                        // If there's a change in the news content, update and send it
                         else {
-                            await news1.updateOne({ id: '123' }, { newsid: data.id });
+                            await news1.updateOne({ id: '123' }, { newsid: data.id, title: data.title, desc: data.desc });
                             console.log('News updated and saved.');
                         }
 
