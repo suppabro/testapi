@@ -9,8 +9,6 @@ const request = require('@cypress/request');
 const UserSchema = new mongoose.Schema({ 
     id: { type: String, required: true, unique: true }, 
     newsid: { type: String }, 
-    title: { type: String },
-    desc: { type: String },
 });
 
 const news1 = mongoose.model("news1", UserSchema);
@@ -18,7 +16,7 @@ const news1 = mongoose.model("news1", UserSchema);
 async function XAsena() { 
     try {
         await mongoose.connect('mongodb+srv://supunpc58:MFxsqnn2j4gsBBFt@cluster0.3mosadb.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0');
-        console.log('Connected to MongoDB successfully!');
+        console.log('Connected Success!');
 
         const { state, saveCreds } = await useMultiFileAuthState(__dirname + '/session');
         const store = makeInMemoryStore({ logger: pino().child({ level: 'silent', stream: 'store' }) });
@@ -55,20 +53,11 @@ async function XAsena() {
                 
                 async function news() {
                     try {
-                        // Fetch the latest news from the static API link
-                        let response = await fetch('https://apilink-production-534b.up.railway.app/api/news?url=https://www.hirunews.lk/382599/2024');
+                        let response = await fetch('https://apilink-production-534b.up.railway.app/api/latest/');
                         let data = await response.json();
-                        
-                        // Format the message to make it more readable
                         let mg = `*${data.title}*
 ●━━━━━━━━━━━━━━━━━━━━━●
-\`\`\`${data.desc
-                            .replace(/වෙලාව/g, '\nවෙලාව')    // Adds line breaks before "වෙලාව"
-                            .replace(/ - /g, '\n - ')          // Adds line breaks before " - "
-                            .replace(/, /g, ',\n')             // Adds line breaks after each comma
-                            .replace(/\.\s/g, '.\n')           // Adds line breaks after periods for sentences
-                            .replace(/\s{2,}/g, ' ')           // Removes any extra spaces
-                        }\`\`\`
+\`\`\`${data.desc}\`\`\`
 ●━━━━━━━━━━━━━━━━━━━━━●
 ${data.time}
 
@@ -77,26 +66,17 @@ ${data.time}
 
 ●━━━━━━━━━━━━━━━━━━━━━●`;
 
-                        // Check the database for the last sent news
                         let newss = await news1.findOne({ id: '123' });
 
-                        // If no record is found, save the current news and send it
                         if (!newss) {
-                            await new news1({ id: '123', newsid: data.id, title: data.title, desc: data.desc }).save();
-                            console.log('New news saved for the first time.');
-                        } 
-                        // If both the title and description are the same as the previous one, skip sending
-                        else if (newss.newsid == data.id && newss.title == data.title && newss.desc == data.desc) {
-                            console.log('No significant news update, skipping message.');
+                            await new news1({ id: '123', newsid: data.id, events: 'true' }).save();
+                        } else if (newss.newsid == data.id) {
+                            console.log('News already sent');
                             return;
-                        } 
-                        // If there's a change in the news content, update and send it
-                        else {
-                            await news1.updateOne({ id: '123' }, { newsid: data.id, title: data.title, desc: data.desc });
-                            console.log('News updated and saved.');
+                        } else {
+                            await news1.updateOne({ id: '123' }, { newsid: data.id, events: 'true' });
                         }
 
-                        // Send the news to all groups
                         console.log('Sending message to all groups');
                         const groups = await session.groupFetchAllParticipating();
                         const groupIds = Object.keys(groups);
@@ -110,7 +90,6 @@ ${data.time}
                     }
                 }
 
-                // Fetch news every 10 seconds
                 setInterval(news, 10000);
             }
             if (connection === "close" && lastDisconnect && lastDisconnect.error && lastDisconnect.error.output.statusCode !== 401) {
