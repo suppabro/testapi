@@ -70,7 +70,7 @@ async function startNewsLoop(session) {
 
     async function sendLatestNews() {
         try {
-            let res = await fetch("https://esana-api.vercel.app/EsanaV3");
+            let res = await fetch("https://hirunews.vercel.app/api/latest-news");
             let json = await res.json();
             let data = json.Posts[0];
 
